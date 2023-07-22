@@ -1,68 +1,84 @@
-var printedQuoteIndex =[];
 
-function generateQuote(){
-    var quoteText = document.getElementById('quoteText');
-    var autherText = document.getElementById('autherText');
-    var quotes=[
-        {
-            quote:`"Be yourself; everyone else is already taken."`,
-            auther:'--Oscar Wilde' 
-        },
-        {
-            quote:`"Two things are infinite: the universe and human stupidity; and I'm not sure about the universe."`,
-            auther:'--Albert Einstein' 
-        },
-        {
-            quote:`"So many books, so little time."`,
-            auther:'--Frank Zappa' 
-        },
-        {
-            quote:`"You know you are in love when you can't fall asleep because reality is finally better than your dreams"`,
-            auther:'--Dr. Seuss' 
-        },
-        {
-            quote:`"You only live once, but if you do it right, once is enough."`,
-            auther:'--Mae West' 
-        },
-        {
-            quote:`"Be the change that you wish to see in the world."`,
-            auther:'--Mahatma Gandhi' 
-        },
-        {
-            quote:`"In three words I can sum up everything I have learned about life: it goes on."`,
-            auther:'--Robert Frost' 
-        },
-        {
-            quote:`"If you tell the truth, you don't have to remember anything."`,
-            auther:'--Mark Twain' 
-        },
-        {
-            quote:`"A friend is someone who knows all about you and still loves you."`,
-            auther:'--Elbert Hubbard' 
-        },
-        {
-            quote:`"Always forgive your enemies; nothing annoys them so much."`,
-            auther:'--Oscar Wilde' 
-        }
-    ]
-    var randomIndex = Math.floor(Math.random()*10);
-    while(printedQuoteIndex.length !=10){
-        if(!printedQuoteIndex.includes(randomIndex)){
-            break;
-        }else{
-            randomIndex = Math.floor(Math.random()*10);
-        }
-    }
-    
-    if(!printedQuoteIndex.includes(randomIndex))
-    {
-        printedQuoteIndex.push(randomIndex);
-        quoteText.innerHTML = quotes[randomIndex].quote;
-        autherText.innerHTML = quotes[randomIndex].auther;
-    }
+var sName = document.getElementById('bookmarkName');
+var sURL = document.getElementById('bookmarkURL');
 
-    // to clear the array after shows all the stored quotes
-    if(printedQuoteIndex.length ==10){
-        printedQuoteIndex=[];
+var sitesList;
+var currIndex;
+
+
+
+if(localStorage.getItem('site') == null){
+    sitesList=[];
+}else {
+    sitesList=JSON.parse(localStorage.getItem('site'));
+    display();
+}
+
+submitBtn.onclick=function(){
+    if(validURL()){
+        createSite();
+    }else {
+        window.alert(
+            `Site Url is not valid, Please follow the rules below :\n
+            1-contains HTTPS:\/\/\n
+            2-domain name be between 3-15 character\n
+            3-contains  ( .com,.eg,.co,.net,.online)
+            `
+        )
     }
 }
+
+
+function createSite(){
+    var foundbefore = false;
+    for(var i=0;i<sitesList.length;i++){
+        if(sitesList[i].siteName == sName.value){
+            foundbefore = true;
+        }
+    }
+    if(!foundbefore){
+        var site={
+            siteName:sName.value,
+            siteURL:sURL.value
+        }
+        sitesList.push(site);
+        localStorage.setItem('site',JSON.stringify(sitesList));
+        reset();
+        display();
+    }else{
+        alert('You must enter another name "name exist"')
+    }
+}
+function reset(){
+    sName.value='';
+    sURL.value='';
+}
+function display(){
+    var tr=``;
+    for(var i=0;i<sitesList.length;i++){
+        tr +=`
+        <tr>
+        <td>${i+1}</td>
+        <td>${sitesList[i].siteName}</td>
+        <td><button class="btn btn-outline-warning" onclick="openSite(${i})"><i class="fa-solid fa-eye pe-2"></i></button></td>
+        <td><button class="btn btn-outline-danger" onclick="deleteSite(${i})"><i class="fa-solid fa-trash"></i></button></td>
+        </tr>`
+    }
+    document.getElementById('tableContent').innerHTML=tr;
+}
+
+function deleteSite(index){
+    sitesList.splice(index,1);
+    localStorage.setItem('site',JSON.stringify(sitesList));
+    display();
+}
+
+function openSite(index){
+    window.open(sitesList[index].siteURL, "_blank");
+}
+
+function validURL() {
+    var url= sURL.value;
+    var pattern = /^(https:\/\/)(www\.)?[A-Za-z]{3,15}(\.)[A-Za-z]{2,6}$/
+    return pattern.test(url);
+  }

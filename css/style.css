@@ -4,9 +4,13 @@
 
 /* home section */
 .home {
-    background: linear-gradient(#000000a2, #000000a2), url(../imgs/bg.jpg);
+    background: linear-gradient(#000000c5, #000000c5), url(../imgs/bg.jpg);
     height: 100vh;
     background-position: center;
     background-size: cover;
     font-family: "Montserrat", sans-serif;
+  }
+
+  .home h1{
+    font-family: 'Pacifico', cursive;
   }
